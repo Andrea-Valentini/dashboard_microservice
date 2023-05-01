@@ -32,7 +32,7 @@ Start the Flask server by running:
 ```bash
 flask run
 ```
-
+Once the application is up, check in PgAdmin that all the tables have been created.
 In another terminal tab, run the following command to prepare the data for importing into the database:
 
 ```bash
@@ -41,11 +41,12 @@ python helper.py
 
 This code allows you to get the _sorted.csv data files, which are ready to be imported into the database tables directly in PgAdmin:
 
-prices.csv -> market_price
+prices.csv -> market_price /
 dataset2.csv -> trades
 
 
-In PgAdmin, run the code to create the sql views calculated_trades_views.
+In PgAdmin, delete the calculated_trades_view table and
+run the code in views.sql in the PgAdmin qwery tool to create the sql view calculated_trades_view.
 
 Finally, run the tests using the following command:
 

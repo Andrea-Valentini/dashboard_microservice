@@ -9,7 +9,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{Settings.DB_USER}:{Setti
 
 db = SQLAlchemy(app)
 
-from app import  models
+from app import  models, routes
 
 
 with app.app_context():

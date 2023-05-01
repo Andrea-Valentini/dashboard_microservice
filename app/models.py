@@ -42,3 +42,23 @@ class Trades(db.Model):
     buy_value = db.Column(db.Float, nullable=False)
     sell_value = db.Column(db.Float, nullable=False)
 
+# Views
+class CalculatedTrades(db.Model):
+    __tablename__ = "calculated_trades_view"
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    timestamp = db.Column(db.TIMESTAMP(timezone=False), nullable=False)
+    balance_value = db.Column(db.Float, nullable=False)
+    balance_volume = db.Column(db.Float, nullable=False)
+    buy_price = db.Column(db.Float, nullable=False)
+    sell_price = db.Column(db.Float, nullable=False)
+
+
+class CalculatedMarketTrades(db.Model):
+    __tablename__ = "calculated_market_trades_view"
+    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    timestamp = db.Column(db.TIMESTAMP(timezone=False), nullable=False)
+    buy_price_spread = db.Column(db.Float, nullable=False)
+    sell_price_spread = db.Column(db.Float, nullable=False)
+
+
+

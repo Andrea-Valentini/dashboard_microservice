@@ -1,7 +1,7 @@
 from app import app, db
 from flask import jsonify
 from app.models import Section,Component, Dashboard
-from app.functions import get_dashboard_layout, get_kpi_value
+from app.functions import get_dashboard_layout, get_kpi_value, get_graph_data
 from pydantic import BaseModel
 from typing import List
 from flask_pydantic import validate
@@ -67,4 +67,43 @@ def get_dashboard(query:GetDashboard):
 @app.route('/get_dashboard_data', methods = ["GET"])
 @validate()
 def get_dashboard_data(query:GetDashboard):
-    return "",200 
+
+    dashboard_name = query.dashboard_name
+    dashboard = Dashboard.query.filter_by(name=dashboard_name).first()
+
+    if not dashboard:
+        return jsonify({"message":"not found"}), 404
+    
+    dashboard_layout_dict = get_dashboard_layout(dashboard)
+
+
+    cockpit_list = []
+
+    for kpi in dashboard_layout_dict["cockpit"]:
+        cockpit_list.append({kpi:get_kpi_value(kpi)})
+
+    Section_list = []
+    for section in dashboard_layout_dict["sectionList"]:
+
+
+        section_name = next(iter(section))
+        graph = section[section_name]["graph"]
+        section_dict={}
+        section_dict["graph_data"] = {graph:get_graph_data(graph)}
+        section_dict["graphKPIs"] = []
+        section_dict["graph_name"] = section_name
+
+
+        for kpi in section[section_name]["graphKPIs"]:
+            section_dict["graphKPIs"].append({kpi:get_kpi_value(kpi)})
+
+        Section_list.append(section_dict)
+    
+    results={
+        "dashboard_name":dashboard_name,
+        "cockpit":cockpit_list,
+        "sectionList":Section_list
+    }
+    
+
+    return jsonify(results),200 

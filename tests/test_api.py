@@ -5,16 +5,16 @@ from pprint import pprint
 
 full_payload = {
     
-    "cockpit": ["balance-cum-y", "sell_value-cum-y", "sell_value-cum-m","buy_value-cum-m"],
+    "cockpit": ["balance_value-cum-y", "sell_value-cum-y", "sell_value-cum-m","buy_value-cum-m"],
     "dashboard_name": "First dashboard",
     "sectionList": [
         {"section_A" :{
             "graph": "buy_value",
-            "graphKPIs" : ["cumulated_yearly", "cumulated_daily"]
+            "graphKPIs" : ["buy_price-avg-m", "buy_price-lstdff-m"]
             }},
         {"section_B" :{
-            "graph": "sell_value",
-            "graphKPIs" : ["cumulated_yearly", "cumulated_daily"]
+            "graph": "balance_value",
+            "graphKPIs" : ["balance_value-cum-y", "balance_value-lstdff-m"]
             }}
         ]
 }
@@ -47,4 +47,9 @@ def test_get_dashboard_data():
         "dashboard_name": "First dashboard"
     }
     result = get(url = "http://localhost:5000/get_dashboard_data",  params=payload)
-    pprint(result)
+
+    res_dict = result.json()
+
+    assert result.status_code == 200
+
+

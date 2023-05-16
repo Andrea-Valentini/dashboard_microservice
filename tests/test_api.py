@@ -1,6 +1,4 @@
 from requests import post, get
-from json import dumps
-from pprint import pprint
 
 
 full_payload = {
@@ -20,33 +18,31 @@ full_payload = {
 }
 
 
-
 def test_create_dashboard():
    
-    result = post(url = "http://localhost:5000/create_dashboard",  json=full_payload)
+    result = post(url = "http://localhost:5000/dashboard",  json=full_payload)
     assert result.status_code == 201
 
 
 def test_get_dashboard():
    
-    payload = {
-        "dashboard_name": "First dashboard"
-    }
-    result = get(url = "http://localhost:5000/get_dashboard",  params=payload)
+
+    id=1
+    result = get(url = f"http://localhost:5000/dashboard/{id}")
     assert result.json()==full_payload
     assert 200
 
-
-    result = get(url = "http://localhost:5000/get_dashboard",  params={"dashboard_name": "not exist"})
+    id=404
+    result = get(url = f"http://localhost:5000/dashboard/{id}")
     assert result.status_code == 404
     assert result.json() == {"message":"not found"}
 
+
 def test_get_dashboard_data():
    
-    payload = {
-        "dashboard_name": "First dashboard"
-    }
-    result = get(url = "http://localhost:5000/get_dashboard_data",  params=payload)
+
+    id = 1
+    result = get(url = f"http://localhost:5000/dashboard/{id}/data")
 
     res_dict = result.json()
 

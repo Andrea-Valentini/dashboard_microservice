@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from typing import List
 from flask_pydantic import validate
 
+
 class CreateDashboard(BaseModel):
   dashboard_name : str
   cockpit: List[str]
@@ -13,25 +14,23 @@ class CreateDashboard(BaseModel):
 
 
 class GetDashboard(BaseModel):
-  dashboard_name: str
+  dashboard_id: int
 
-@app.route('/create_dashboard', methods = ["POST"])
+
+@app.route('/dashboard', methods = ["POST"])
 @validate()
 def create_dashboard(body:CreateDashboard):
 
-    dashboard_name = body.dashboard_name
-    dashboard_model = Dashboard(name=dashboard_name)
+    dashboard_model = Dashboard(name=body.dashboard_name)
     db.session.add(dashboard_model)
 
     cockpit = body.cockpit
-    section_model = Section(name="cockpit",dashboard = dashboard_model)
+    section_model = Section(name="cockpit",dashboard=dashboard_model)
     db.session.add(section_model)
-
 
     for kpi in cockpit:
         component_model = Component(code=kpi, section=section_model)
         db.session.add(component_model)
-        
 
     for section in body.sectionList:
 
@@ -47,35 +46,29 @@ def create_dashboard(body:CreateDashboard):
                 db.session.add(sub_component_model)
 
     db.session.commit()
-
     return "", 201
 
 
-@app.route('/get_dashboard', methods = ["GET"])
-@validate()
-def get_dashboard(query:GetDashboard):
+@app.route('/dashboard/<id>', methods = ["GET"])
+def get_dashboard(id:int):
 
-    dashboard_name = query.dashboard_name
-
-    dashboard = Dashboard.query.filter_by(name=dashboard_name).first()
+    dashboard = Dashboard.query.filter_by(id=int(id)).first()
 
     if not dashboard:
         return jsonify({"message":"not found"}), 404
     
     return jsonify(get_dashboard_layout(dashboard)) , 200
 
-@app.route('/get_dashboard_data', methods = ["GET"])
-@validate()
-def get_dashboard_data(query:GetDashboard):
 
-    dashboard_name = query.dashboard_name
-    dashboard = Dashboard.query.filter_by(name=dashboard_name).first()
+@app.route('/dashboard/<id>/data', methods = ["GET"])
+def get_dashboard_data(id:int):
+
+    dashboard = Dashboard.query.filter_by(id=int(id)).first()
 
     if not dashboard:
         return jsonify({"message":"not found"}), 404
     
     dashboard_layout_dict = get_dashboard_layout(dashboard)
-
 
     cockpit_list = []
 
@@ -100,7 +93,7 @@ def get_dashboard_data(query:GetDashboard):
         Section_list.append(section_dict)
     
     results={
-        "dashboard_name":dashboard_name,
+        "dashboard_name":dashboard.name,
         "cockpit":cockpit_list,
         "sectionList":Section_list
     }

@@ -1,9 +1,11 @@
 from app import db
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
 
 class Dashboard(db.Model):
     __tablename__ = "dashboard"
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(50), nullable=False, unique=True)
     sections = db.relationship("Section", backref="dashboard", lazy=True)
 
@@ -14,7 +16,7 @@ class Section(db.Model):
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(50), nullable=True)
     components = db.relationship("Component", backref="section", lazy=True)
-    dashboard_id = db.Column(db.Integer, db.ForeignKey("dashboard.id"))
+    dashboard_id = db.Column(UUID(as_uuid=True), db.ForeignKey("dashboard.id"))
 
 
 class Component(db.Model):

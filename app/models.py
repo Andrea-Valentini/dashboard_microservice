@@ -1,10 +1,11 @@
 from app import db
 
+
 class Dashboard(db.Model):
     __tablename__ = "dashboard"
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    name = db.Column(db.String(50), nullable=False,unique=True)
-    sections = db.relationship("Section", backref="dashboard", lazy = True)    
+    name = db.Column(db.String(50), nullable=False, unique=True)
+    sections = db.relationship("Section", backref="dashboard", lazy=True)
 
 
 class Section(db.Model):
@@ -12,7 +13,7 @@ class Section(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False)
     name = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(50), nullable=True)
-    components = db.relationship("Component", backref="section", lazy = True)
+    components = db.relationship("Component", backref="section", lazy=True)
     dashboard_id = db.Column(db.Integer, db.ForeignKey("dashboard.id"))
 
 
@@ -23,7 +24,9 @@ class Component(db.Model):
     description = db.Column(db.String(50), nullable=True)
     section_id = db.Column(db.Integer, db.ForeignKey("section.id"), nullable=False)
     component_id = db.Column(db.Integer, db.ForeignKey("component.id"))
-    sub_components = db.relationship('Component', backref=db.backref('component', remote_side=[id]))
+    sub_components = db.relationship(
+        "Component", backref=db.backref("component", remote_side=[id])
+    )
 
 
 class MarketPrice(db.Model):
@@ -42,6 +45,7 @@ class Trades(db.Model):
     buy_value = db.Column(db.Float, nullable=False)
     sell_value = db.Column(db.Float, nullable=False)
 
+
 # Views
 class CalculatedTrades(db.Model):
     __tablename__ = "calculated_trades_view"
@@ -59,6 +63,3 @@ class CalculatedMarketTrades(db.Model):
     timestamp = db.Column(db.TIMESTAMP(timezone=False), nullable=False)
     buy_price_spread = db.Column(db.Float, nullable=False)
     sell_price_spread = db.Column(db.Float, nullable=False)
-
-
-

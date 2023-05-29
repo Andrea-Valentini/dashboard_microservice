@@ -7,7 +7,8 @@ class MetaEnum(EnumMeta):
             cls(item)
         except ValueError:
             return False
-        return True    
+        return True
+
 
 class BaseEnum(Enum, metaclass=MetaEnum):
     pass

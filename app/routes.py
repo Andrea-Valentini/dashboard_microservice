@@ -1,12 +1,15 @@
-from app import app, db
-from flask import jsonify
+from app.db import db
+from flask import jsonify, Blueprint
 from app.models import Section, Component, Dashboard
 from app.functions import get_dashboard_layout, get_kpi_value, get_graph_data
 from flask_pydantic import validate
 from app.schemas import DashboardLayoutSchema, SectionSchema, DashboardSchema
 
 
-@app.route("/dashboard", methods=["POST"])
+main = Blueprint("main", __name__)
+
+
+@main.route("/dashboard", methods=["POST"])
 @validate()
 def create_dashboard(body: DashboardLayoutSchema):
     dashboard_model = Dashboard(name=body.name)
@@ -38,7 +41,7 @@ def create_dashboard(body: DashboardLayoutSchema):
     return "", 201
 
 
-@app.route("/dashboard/<id>", methods=["GET"])
+@main.route("/dashboard/<id>", methods=["GET"])
 @validate()
 def get_dashboard(id: int):
     dashboard = Dashboard.query.filter_by(id=int(id)).first()
@@ -49,7 +52,7 @@ def get_dashboard(id: int):
     return get_dashboard_layout(dashboard), 200
 
 
-@app.route("/dashboard/<id>", methods=["DELETE"])
+@main.route("/dashboard/<id>", methods=["DELETE"])
 @validate()
 def delete_dashboard(id: int):
     dashboard = Dashboard.query.filter_by(id=int(id)).first()
@@ -63,7 +66,7 @@ def delete_dashboard(id: int):
     return 204
 
 
-@app.route("/dashboard/<id>/data", methods=["GET"])
+@main.route("/dashboard/<id>/data", methods=["GET"])
 @validate()
 def get_dashboard_data(id: int):
     dashboard = Dashboard.query.filter_by(id=int(id)).first()

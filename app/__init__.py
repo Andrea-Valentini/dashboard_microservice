@@ -1,17 +1,18 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from config import Settings
-
-app = Flask(__name__)
-
-app.config[
-    "SQLALCHEMY_DATABASE_URI"
-] = f"postgresql://{Settings.DB_USER}:{Settings.DB_PASSWORD}@{Settings.DB_HOST_NAME}/{Settings.DB_NAME}"
-
-db = SQLAlchemy(app)
-
-from app import models, routes
+from app.routes import main
+from app.db import db
 
 
-with app.app_context():
-    db.create_all()
+def create_app(
+    database_uri=f"postgresql://{Settings.DB_USER}:{Settings.DB_PASSWORD}@{Settings.DB_HOST_NAME}/{Settings.DB_NAME}",
+):
+    app = Flask(__name__)
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_uri
+
+    db.init_app(app)
+
+    app.register_blueprint(main)
+    return app

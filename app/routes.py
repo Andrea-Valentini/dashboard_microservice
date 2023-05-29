@@ -44,9 +44,23 @@ def get_dashboard(id: int):
     dashboard = Dashboard.query.filter_by(id=int(id)).first()
 
     if not dashboard:
-        return jsonify({"message": "not found"}), 404
+        return jsonify({"message": f"dashboard {id} not found"}), 404
 
     return get_dashboard_layout(dashboard), 200
+
+
+@app.route("/dashboard/<id>", methods=["DELETE"])
+@validate()
+def delete_dashboard(id: int):
+    dashboard = Dashboard.query.filter_by(id=int(id)).first()
+
+    if not dashboard:
+        return jsonify({"message": f"dashboard {id} not found"}), 404
+
+    db.session.delete(dashboard)
+    db.session.commit()
+
+    return 204
 
 
 @app.route("/dashboard/<id>/data", methods=["GET"])

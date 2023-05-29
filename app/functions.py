@@ -1,44 +1,42 @@
 
-from app.models import Section,Component, Trades, CalculatedTrades, CalculatedMarketTrades
+from app.models import Trades, CalculatedTrades, CalculatedMarketTrades, Dashboard
 from app.constants import DataTrades, CalculatedDataMarketTrades, Timescale, Operation, CalculatedDataTrades
+from app.schemas import DashboardLayoutSchema, SectionLayoutSchema
 from app import db
 from sqlalchemy import extract, func
 
 
 
-def get_dashboard_layout(dashboard):
+def get_dashboard_layout(dashboard:Dashboard):
 
-    sections =  Section.query.filter_by(dashboard_id=dashboard.id).all()
+    sections =  dashboard.sections
 
-
-    dashboard_dict = {
-        "dashboard_name": dashboard.name,
-        "cockpit" : None,
-        "sectionList": []
-    }
+    sectionsList=[]
 
     for section in sections:
-        section_dict = {}
-        components = Component.query.filter_by(section_id=section.id).all()
-
-        
+        components = section.components
         if section.name == "cockpit":
-            dashboard_dict["cockpit"]=[component.code for component in components]
+            cockpit=[component.code for component in components]
             continue
 
         else:
-            section_dict[section.name] = {
-                    "graph":"",
-                    "graphKPIs":[]
-                }
+
+            graphKPIs=[]
+    
             for component in components:
                 if component.component_id is None:
-                    section_dict[section.name]["graph"] = component.code
+                    graph = component.code
                 else:
-                    section_dict[section.name]["graphKPIs"].append(component.code)
+                    graphKPIs.append(component.code)
             
-        dashboard_dict["sectionList"].append(section_dict)
-    return dashboard_dict
+        sectionsList.append(SectionLayoutSchema(name=section.name,
+                                          graph=graph,
+                                            graphKPIs=graphKPIs))
+
+    return DashboardLayoutSchema(name=dashboard.name,
+                           cockpit=cockpit,
+                           sections=sectionsList
+                           )
 
 
 def get_timescale(timescale):

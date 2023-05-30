@@ -7,17 +7,18 @@ from app.constants import (
     CalculatedDataTrades,
 )
 from app.schemas import DashboardLayoutSchema, SectionLayoutSchema
-from app import db
+from app.db import db
 from sqlalchemy import extract, func
 
 
-def get_dashboard_layout(dashboard: Dashboard):
+def get_dashboard_layout(dashboard: Dashboard) -> DashboardLayoutSchema:
     sections = dashboard.sections
 
-    sectionsList = []
+    sectionsList = cockpit = []
 
     for section in sections:
         components = section.components
+
         if section.name == "cockpit":
             cockpit = [component.code for component in components]
             continue

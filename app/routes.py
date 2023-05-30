@@ -5,7 +5,6 @@ from app.functions import get_dashboard_layout, get_kpi_value, get_graph_data
 from flask_pydantic import validate
 from app.schemas import DashboardLayoutSchema, SectionSchema, DashboardSchema
 
-
 main = Blueprint("main", __name__)
 
 
@@ -43,8 +42,8 @@ def create_dashboard(body: DashboardLayoutSchema):
 
 @main.route("/dashboard/<id>", methods=["GET"])
 @validate()
-def get_dashboard(id: int):
-    dashboard = Dashboard.query.filter_by(id=int(id)).first()
+def get_dashboard(id: str):
+    dashboard = Dashboard.query.filter_by(id=id).first()
 
     if not dashboard:
         return jsonify({"message": f"dashboard {id} not found"}), 404
@@ -54,8 +53,8 @@ def get_dashboard(id: int):
 
 @main.route("/dashboard/<id>", methods=["DELETE"])
 @validate()
-def delete_dashboard(id: int):
-    dashboard = Dashboard.query.filter_by(id=int(id)).first()
+def delete_dashboard(id: str):
+    dashboard = Dashboard.query.filter_by(id=id).first()
 
     if not dashboard:
         return jsonify({"message": f"dashboard {id} not found"}), 404
@@ -68,8 +67,8 @@ def delete_dashboard(id: int):
 
 @main.route("/dashboard/<id>/data", methods=["GET"])
 @validate()
-def get_dashboard_data(id: int):
-    dashboard = Dashboard.query.filter_by(id=int(id)).first()
+def get_dashboard_data(id: str):
+    dashboard = Dashboard.query.filter_by(id=id).first()
 
     if not dashboard:
         return jsonify({"message": "not found"}), 404

@@ -6,7 +6,7 @@ import uuid
 class Dashboard(db.Model):
     __tablename__ = "dashboard"
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = db.Column(db.String(50), nullable=False, unique=True)
+    name = db.Column(db.String(50), nullable=False, unique=False)
     sections = db.relationship("Section", backref="dashboard", lazy=True)
 
 

@@ -1,7 +1,3 @@
-from requests import post, get, delete
-from pytest import fixture
-
-
 full_payload = {
     "name": "First dashboard",
     "cockpit": [
@@ -25,27 +21,23 @@ full_payload = {
 }
 
 
-def test_create_dashboard(app_test):
-    result = post(url="http://localhost:5000/dashboard", json=full_payload)
+def test_create_dashboard(client):
+    result = client.post("/dashboard", json=full_payload)
     assert result.status_code == 201
 
 
-def test_get_dashboard():
-    id = 1
-    result = get(url=f"http://localhost:5000/dashboard/{id}")
-    assert result.json() == full_payload
-    assert 200
+def test_get_dashboard(client, dashboard_id):
+    result = client.get(f"/dashboard/{dashboard_id}")
+    assert result.status_code == 200
+    assert result.json == {"name": "Sample dashboard", "cockpit": [], "sections": []}
 
-    id = 404
-    result = get(url=f"http://localhost:5000/dashboard/{id}")
+    id = "0e36a56c-e22b-43df-96c1-a2caccc29a5d"
+    result = client.get(f"/dashboard/{id}")
     assert result.status_code == 404
-    assert result.json() == {"message": f"dashboard {id} not found"}
+    assert result.json == {"message": f"dashboard {id} not found"}
 
 
-def test_get_dashboard_data():
-    id = 1
-    result = get(url=f"http://localhost:5000/dashboard/{id}/data")
-
-    res_dict = result.json()
+def test_get_dashboard_data(client, dashboard_id, dashboard_layout):
+    result = client.get(f"/dashboard/{dashboard_id}/data")
 
     assert result.status_code == 200
